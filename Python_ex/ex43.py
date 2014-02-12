@@ -1,39 +1,57 @@
-# -*- coding: utf-8 -*-
+import random
+from urllib import urlopen
+import sys
+WORD_URL = "http://learncodethehardway.org/words.txt"
+WORDS = []
+PHRASES = {
+    "class ###(###):":
+    "Make a class named ### that is-a ###.",
+    "class ###(object):\n\tdef __init__(self, ***)" :
+    "class ### has-a __init__ that takes self and *** parameters.",
+    "class ###(object):\n\tdef ***(self, @@@)":
+    "class ### has-a function named *** that takes self and @@@ parameters.",
+    "*** = ###()":
+    "Set *** to an instance of class ###.",
+    "***.***(@@@)":
+    "From *** get the *** function, and call it with parameters self, @@@.",
+    "***.*** = '***'":
+    "From *** get the *** attribute and set it to '***'."
+}
 
-from sys import exit
-from random import randint
+# do they want to drill phrases first
+PHRASE_FIRST = False
+if len(sys.argv) == 2 and sys.argv[1] == "english":
+    PHRASE_FIRST = True
+	
+# load up the words from the website
+for word in urlopen(WORD_URL).readlines():
+    WORDS.append(word.strip())
+	
+	
+def convert(snippet, phrase):
+    class_names = [w.capitalize() for w in
+       random.sample(WORDS, snippet.count("###"))]
+    other_names = random.sample(WORDS, snippet.count("***"))
+    results = []
+    param_names = []
+	
+	
+    for i in range(0, snippet.count("@@@")):
+      param_count = random.randint(1,3)
+      param_names.append(', '.join(random.sample(WORDS, param_count)))
+	  
+	  
+    for sentence in snippet, phrase:
+      result = sentence[:]
 
-def death():
-    quips = ["You died. You kinda suck at this.",
-             "Nice job, you died ...jackass.",
-             "Such a luser.",
-             "I have a small puppy that's better at this."]
-    print quips[randint(0, len(quips)-1)]
-    exit(1)
-	
-def first_method():
-    print "escape pod."
-    
-    action = raw_input("> ")
-	
-    if action == "shoot!":
-	    print "you are dead.Then he eats you."
-	    return 'death'
-		
-    elif action == "dodge!":
-	    print "your head and eats you."
-	    return 'death'
-		
-    elif aciotn == "tell a joke":
-	     print "putting him down."
-	     return 'laser_weapon_armory'
-		 
-    else:
-	     print "DOES NOT COMPUTE"
-	     return 'central_corridor'
-		 
-def laser_weapon_armory():
-    print "get the bomb. The code is 3 digits."
-    code = "%d%d%d" % (randint(1,9), randint(1,9), randint(1,9))
-    guess = raw_input("[keypad]> ")
-    guesses = 0
+       # fake class names
+      for word in class_names:
+        result = result.replace("###", word, 1)
+
+       # fake other names
+      for word in other_names:
+        result = result.replace("***", word, 1)
+
+       # fake parameter lists
+      for word in param_names:
+        result = result.replace("@@@", word, 1)
